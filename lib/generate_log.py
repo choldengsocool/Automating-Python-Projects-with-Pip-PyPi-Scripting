@@ -1,19 +1,54 @@
 from datetime import datetime
 import os
 
+
 def generate_log(data):
-    # TODO: Implement log generation logic
+    """Write a list of log entries to a dated file and return the filename.
 
-    # STEP 1: Validate input
-    # Hint: Check if data is a list
+    Args:
+        data (list): List of string log entries.
 
-    # STEP 2: Generate a filename with today's date (e.g., "log_20250408.txt")
-    # Hint: Use datetime.now().strftime("%Y%m%d")
+    Returns:
+        str: The filename that was written.
 
-    # STEP 3: Write the log entries to a file using File I/O
-    # Use a with open() block and write each line from the data list
-    # Example: file.write(f"{entry}\n")
+    Raises:
+        ValueError: If `data` is not a list.
+    """
+    if not isinstance(data, list):
+        raise ValueError("data must be a list")
 
-    # STEP 4: Print a confirmation message with the filename
+    today = datetime.now().strftime("%Y%m%d")
+    filename = f"log_{today}.txt"
 
-    pass
+    with open(filename, "w") as file:
+        for entry in data:
+            file.write(f"{entry}\n")
+
+    print(f"Log written to {filename}")
+    return filename
+
+
+def fetch_data():
+    """Fetch a sample post from jsonplaceholder.typicode.com using requests.
+
+    Imports `requests` inside the function so the module is only required when
+    the integration is used (keeps the function import-light for tests).
+    """
+    try:
+        import requests
+
+        resp = requests.get("https://jsonplaceholder.typicode.com/posts/1", timeout=5)
+        if resp.status_code == 200:
+            return resp.json()
+    except Exception:
+        return {}
+
+    return {}
+
+
+if __name__ == "__main__":
+    sample = ["User logged in", "User updated profile", "Report exported"]
+    filename = generate_log(sample)
+
+    post = fetch_data()
+    print("Fetched Post Title:", post.get("title", "No title found"))
